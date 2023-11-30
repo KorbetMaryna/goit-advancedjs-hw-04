@@ -1,9 +1,7 @@
 export function createMarkup(images) {
     const gallery = document.querySelector('.gallery');
-    const markupGallery = images
-        .map(({ webformatURL, tags, likes, views, comments, downloads, largeImageURL }) => {
-            return `
-            <div class="photo-card">
+        const markupGallery = images.map(({ webformatURL, tags, likes, views, comments, downloads, largeImageURL }) =>
+            {return `<div class="photo-card">
                 <a href = "${largeImageURL}">
                 <img src="${webformatURL}" alt="${tags}" loading="lazy" />
                 <div class="info">
@@ -14,11 +12,7 @@ export function createMarkup(images) {
                 </div> 
                 </a>
             </div>`
-        })
-        .join('')
+    })
+        .join(''); 
     gallery.insertAdjacentHTML('beforeend', markupGallery);
-}
-
-
-
-    
+}   
