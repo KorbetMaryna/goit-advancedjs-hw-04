@@ -33,7 +33,7 @@ the task.</a> &#xa0;
 
 ## :sparkles: Tasks
 
-:heavy_check_mark: "Cat-search";
+:heavy_check_mark: "Images-search";
 
 1. Create the front-end part of the application for searching and viewing images
    by keyword. Add design of interface elements.
