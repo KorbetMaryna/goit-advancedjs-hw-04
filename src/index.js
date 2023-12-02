@@ -31,6 +31,16 @@ async function onSearchForm(e) {
     page = 1;
     textQuery = e.currentTarget.searchQuery.value.trim();
 
+    if (textQuery === '') {
+        iziToast.error({
+            title: 'Error',
+            message: `Sorry, you didn't write what to look for`,
+            position: 'center',
+        });
+        refs.searchForm.reset();
+        return;
+    }
+
     refs.gallery.innerHTML = '';
 
     if (/\d/.test(textQuery)) {
@@ -71,11 +81,11 @@ async function onSearchForm(e) {
         catch(error) {
             console.error(error);
             refs.loader.classList.add('hidden');  
-        iziToast.error({
-            title: 'Server error',
-            message: 'Oops! Something went wrong! Try reloading the page!',
-            position: 'center',
-        });
+            iziToast.error({
+                title: 'Server error',
+                message: 'Oops! Something went wrong! Try reloading the page!',
+                position: 'center',
+            });
         }
 }
 
