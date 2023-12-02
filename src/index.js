@@ -38,6 +38,7 @@ async function onSearchForm(e) {
             position: 'center',
         });
         refs.searchForm.reset();
+        refs.submitBtn.disabled = true;
         return;
     }
 
