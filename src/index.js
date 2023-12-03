@@ -19,6 +19,8 @@ const perPage = 40;
 
 let textQuery = '';
 
+const lightbox = new SimpleLightbox('.gallery a');
+
 refs.submitBtn.disabled = true;
 refs.loader.classList.add('hidden');
 
@@ -30,6 +32,8 @@ async function onSearchForm(e) {
     e.preventDefault();
     page = 1;
     textQuery = e.currentTarget.searchQuery.value.trim();
+    refs.loader.classList.add('hidden');
+    refs.loadMoreBtn.classList.add('hidden');
 
     if (textQuery === '') {
         iziToast.error({
@@ -51,37 +55,52 @@ async function onSearchForm(e) {
             position: 'center',
         });
     }
+
     try {
-        const { data } = await fetchData(textQuery, page, perPage);
         refs.loader.classList.remove('hidden');
+        const { data } = await fetchData(textQuery, page, perPage);
 
-            if (data.totalHits === 0) {
-                refs.loader.classList.add('hidden');
-                iziToast.error({
-                    title: 'Error',
-                    message: `Sorry, there are no images matching your search query. Please try again.`,
-                    position: 'center',
-                });
-            } else {
-                refs.loader.classList.add('hidden');
+        if (data.totalHits === 0) {
+            refs.loader.classList.add('hidden');
 
-                createMarkup(data.hits);
-                onSimpleLightbox(); 
+            iziToast.error({
+                title: 'Error',
+                message: `Sorry, there are no images matching your search query. Please try again.`,
+                position: 'center',
+            });
+        } else {
+            refs.loader.classList.add('hidden');
+
+            createMarkup(data.hits);
+            lightbox.refresh(); 
+
+            iziToast.info({
+                title: 'Information',
+                message: `Hooray! We found ${data.totalHits} images.`,
+                position: 'center',
+            });
+
+            if (data.totalHits > perPage) {
+                refs.loadMoreBtn.classList.remove('hidden');
+            }
+
+            if (data.totalHits <= perPage) {
+                refs.loadMoreBtn.classList.add('hidden');
 
                 iziToast.info({
                     title: 'Information',
-                    message: `Hooray! We found ${data.totalHits} images.`,
+                    message: `We're sorry, but you've reached the end of search results.`,
                     position: 'center',
                 });
-
-                if (data.totalHits > perPage) {
-                    refs.loadMoreBtn.classList.remove('hidden');
-                }
+            } 
             } 
         }
         catch(error) {
             console.error(error);
-            refs.loader.classList.add('hidden');  
+
+            refs.loadMoreBtn.classList.add('hidden');
+            refs.loader.classList.add('hidden');
+
             iziToast.error({
                 title: 'Server error',
                 message: 'Oops! Something went wrong! Try reloading the page!',
@@ -92,17 +111,22 @@ async function onSearchForm(e) {
 
 async function onLoadMore() {
     page += 1;
+    
     try {
+        refs.loader.classList.remove('hidden')
         const {data} = await fetchData(textQuery, page, perPage);
+        refs.loader.classList.add('hidden');
+
         createMarkup(data.hits);
-        onSimpleLightbox();
+        lightbox.refresh(); 
             
         const totalPages = Math.ceil(data.totalHits / perPage);
             if (page < totalPages) {
                 refs.loadMoreBtn.classList.remove('hidden');
-
             }
             else {
+                refs.loadMoreBtn.classList.add('hidden');
+
                 iziToast.info({
                     title: 'Information',
                     message: `We're sorry, but you've reached the end of search results.`,
@@ -116,9 +140,6 @@ async function onLoadMore() {
         }
 }
 
-function onSimpleLightbox() {
-    new SimpleLightbox('.gallery a').refresh();
-}
 
 
 
